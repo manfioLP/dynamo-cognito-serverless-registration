@@ -1,0 +1,77 @@
+service: user-serverless-crud
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  environment:
+    DYNAMOB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:DescribeTable
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "Fn::GetAtt": [ UsersTable ]
+
+functions:
+  create:
+    handler: user/create.handler
+    events:
+      - http:
+          path: users
+          method: post
+          cors: true
+
+  list:
+    handler: user/list.handler
+    events:
+      - http:
+          path: users
+          method: get
+          cors: true
+
+  get:
+    handler: user/get.handler
+    events:
+      - http:
+          path: users/${id}
+          method: get
+          cors: true
+
+  update:
+    handler: user/update.handler
+    events:
+      - http:
+          path: users/${id}
+          method: put
+          cors: true
+
+  delete:
+    handler: user/delete.handler
+    events:
+      - http:
+          path: users/${id}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    UsersDynamoDbTable:
+      Type: 'AWS:DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${sefl:provider.environment.DYNAMODB_TABLE}
