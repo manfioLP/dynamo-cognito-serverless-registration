@@ -1,10 +1,13 @@
 // 'use strict'
+import config from '../config';
 const AWS = require("aws-sdk"); // eslint-disable-line import/no-extraneous-dependencies
 
-let options = {};
+let options = {
+	// dynamo configs
+};
 
 // connect to local DB if running offline
-if (process.env.IS_OFFLINE) {
+if (config.IS_OFFLINE) {
 	options = {
 		region: "localhost",
 		endpoint: "http://localhost:8000"
