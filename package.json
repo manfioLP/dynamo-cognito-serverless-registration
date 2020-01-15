@@ -1,0 +1,18 @@
+{
+  "name": "user-serverless-crud",
+  "version": "1.0.0",
+  "description": "a user serverless crud with cognito integrated",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manfioLP/user-cognito-serverless-crud/tree/master/user"
+  },
+  "author": "manfioLP",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.601.0"
+  }
+}
