@@ -15,7 +15,7 @@ if (config.IS_OFFLINE) {
 }
 
 AWS.config.update({
-	region: "us-west-1",
+	region: "us-east-1",
 	accessKeyId: "accessKeyId",
 	secretAccessKey: "secretAccessKey",
 	endpoint: new AWS.Endpoint("http://localhost:8000")
