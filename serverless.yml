@@ -1,34 +1,55 @@
-service: user-serverless-crud
+service: user-cognito-register-with-dynamodb
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+plugins:
+  - serverless-dynamodb-local
+  - serverless-offline
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    migration:
+      dir: offline/migrations
 
 provider:
   name: aws
-  runtime: nodejs10.x
+  runtime: nodejs8.10
   environment:
-    DYNAMOB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    DYNAMODB_TABLE: users
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:DescribeTable
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource:
-        - "Fn::GetAtt": [ UsersTable ]
+      Resource: "arn:aws:dynamodb:us-east-1:*:table/users"
 
 functions:
   create:
-    handler: user/create.handler
+    handler: users/create.create
     events:
       - http:
           path: users
           method: post
           cors: true
 
+  # TODO: SET TO catch arn froms .env
+  # create:
+  #   handler: users/create.create
+  #   events:
+  #     - sns: arn:aws:sns:us-east-1:000000000000:test-topic
+
   list:
-    handler: user/list.handler
+    handler: users/list.list
     events:
       - http:
           path: users
@@ -36,42 +57,42 @@ functions:
           cors: true
 
   get:
-    handler: user/get.handler
+    handler: users/get.get
     events:
       - http:
-          path: users/${id}
+          path: users/{id}
           method: get
           cors: true
 
   update:
-    handler: user/update.handler
+    handler: users/update.update
     events:
       - http:
-          path: users/${id}
+          path: users/{id}
           method: put
           cors: true
 
   delete:
-    handler: user/delete.handler
+    handler: users/delete.delete
     events:
       - http:
-          path: users/${id}
+          path: users/{id}
           method: delete
           cors: true
 
 resources:
   Resources:
     UsersDynamoDbTable:
-      Type: 'AWS:DynamoDB::Table'
+      Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
-          - AttributeName: id
+          -
+            AttributeName: id
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          -
+            AttributeName: id
             KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
-        TableName: ${sefl:provider.environment.DYNAMODB_TABLE}
+        BillingMode: PAY_PER_REQUEST
+        TableName: users

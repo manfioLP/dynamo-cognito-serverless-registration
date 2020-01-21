@@ -11,7 +11,7 @@ module.exports.create = async (event, context) => {
 	const eventBody = JSON.parse(event.body);
 	let data = {};
 
-	// TODO: call cognito
+	// TODO: verify cognito call
 	const cognitoResponse = createCognitoUser({
 		email: eventBody.email,
 		phone: eventBody.phone
@@ -22,6 +22,7 @@ module.exports.create = async (event, context) => {
 			...eventBody,
 			deleted: false,
 			isActive: true,
+			finishedSignUp: false,
 			createdAt: timestamp,
 			updatedAt: timestamp,
 			id: cognitoResponse.id,
